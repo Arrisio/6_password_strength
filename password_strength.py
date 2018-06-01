@@ -64,22 +64,21 @@ def get_password_strength(typed_password, blacklist, person_data=None):
     if typed_password in blacklist:
         return 1
 
+    init_score_min_threshold = 0
+    init_score_max_threshold = 6
+
     score = len(typed_password) - 6
-    if score < 0:
-        score = 0
-    if score > 6:
-        score = 6
+    score = min(score, init_score_max_threshold)
+    score = max(score, init_score_min_threshold)
 
     score += calc_difficult_score_by_inclusion(typed_password)
 
     if person_data:
         score -= calc_penalty_by_pers_data(typed_password, person_data)
 
-    if score < 1:
-        score = 1
-    if score > 10:
-        score = 10
-    return score
+    min_scrore_treshold = 1
+    max_scrore_treshold = 10
+    return min(max(score, min_scrore_treshold), max_scrore_treshold)
 
 
 def parse_arguments():
