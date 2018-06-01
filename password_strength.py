@@ -41,11 +41,7 @@ def calc_penalty_by_pers_data(typed_password, person_data=None):
     return penalty
 
 
-def get_password_strength(typed_password, blacklist=[], person_data=None):
-
-    if typed_password in blacklist:
-        return 1
-
+def calc_difficult_score_by_inclusion(typed_password):
     score = len(typed_password) - 6
     if score < 0:
         score = 0
@@ -63,6 +59,16 @@ def get_password_strength(typed_password, blacklist=[], person_data=None):
 
     if re.search(r'[' + string.digits + ']', typed_password):
         score += 1
+
+    return score
+
+
+def get_password_strength(typed_password, blacklist, person_data):
+
+    if typed_password in blacklist:
+        return 1
+
+    score = calc_difficult_score_by_inclusion(typed_password)
 
     if person_data:
         score -= calc_penalty_by_pers_data(typed_password, person_data)
