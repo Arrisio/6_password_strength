@@ -26,7 +26,7 @@ def get_password_from_keyboard():
             print(str(e))
 
 
-def calc_penalty_by_pers_data(typed_password, person_data=None):
+def calc_penalty_by_pers_data(typed_password, person_data):
     penalty = 0
 
     if person_data:
@@ -63,7 +63,7 @@ def calc_difficult_score_by_inclusion(typed_password):
     return score
 
 
-def get_password_strength(typed_password, blacklist, person_data):
+def get_password_strength(typed_password, blacklist, person_data=None):
 
     if typed_password in blacklist:
         return 1
