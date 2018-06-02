@@ -16,16 +16,6 @@ def validate_password(typed_password):
         return
 
 
-def get_password_from_keyboard():
-    while True:
-        typed_password = getpass.getpass(prompt='Enter password: ')
-        try:
-            validate_password(typed_password)
-            return typed_password
-        except ValueError as e:
-            print(str(e))
-
-
 def calc_penalty_by_pers_data(typed_password, person_data):
     penalty = 0
 
@@ -44,16 +34,16 @@ def calc_penalty_by_pers_data(typed_password, person_data):
 def calc_difficult_score_by_inclusion(typed_password):
     inclusion_score = 0
 
-    if re.search(r'[' + string.punctuation + ']', typed_password):
+    if re.search(r'[{}]'.format(string.punctuation), typed_password):
         inclusion_score += 1
 
-    if re.search(r'[' + string.ascii_uppercase + ']', typed_password):
+    if re.search(r'[{}]'.format(string.ascii_uppercase), typed_password):
         inclusion_score += 1
 
-    if re.search(r'[' + string.ascii_lowercase + ']', typed_password):
+    if re.search(r'[{}]'.format(string.ascii_lowercase), typed_password):
         inclusion_score += 1
 
-    if re.search(r'[' + string.digits + ']', typed_password):
+    if re.search(r'[{}]'.format(string.digits), typed_password):
         inclusion_score += 1
 
     return inclusion_score
@@ -81,6 +71,14 @@ def get_password_strength(typed_password, blacklist, person_data=None):
     return min(max(score, min_scrore_treshold), max_scrore_treshold)
 
 
+def load_blacklist(blacklist=None):
+    if blacklist:
+        with open(params.blacklist, 'r') as file_handler:
+            return file_handler.read().splitlines()
+    else:
+        return []
+
+
 def parse_arguments():
     parser = argparse.ArgumentParser()
 
@@ -97,21 +95,23 @@ def parse_arguments():
 if __name__ == '__main__':
     params = parse_arguments()
 
-    if params.blacklist:
-        try:
-            with open(params.blacklist, 'r') as file_handler:
-                blacklist = file_handler.read().split()
-        except (OSError, ValueError):
-            print('failed load blacklist')
-            blacklist = []
-    else:
+    try:
+        blacklist = load_blacklist(params.blacklist)
+    except (OSError, ValueError):
+        print('failed load blacklist')
         blacklist = []
 
     person_data = input(
         'Enter the personal data that will be used to verify the password: '
     )
 
-    typed_password = get_password_from_keyboard()
+    typed_password = getpass.getpass(prompt='Enter password: ')
+
+    try:
+        validate_password(typed_password)
+    except ValueError as validate_password_error:
+        exit(str(validate_password_error))
+
     password_strength = get_password_strength(
         typed_password, blacklist, person_data
     )
