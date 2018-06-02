@@ -98,7 +98,10 @@ if __name__ == '__main__':
     try:
         blacklist = load_blacklist(params.blacklist)
     except (OSError, ValueError):
-        print('failed load blacklist')
+        print(
+            'the blacklist check will not be performed'
+            ' because the file could not be loaded.'
+        )
         blacklist = []
 
     person_data = input(
