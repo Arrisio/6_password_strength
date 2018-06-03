@@ -113,7 +113,7 @@ if __name__ == '__main__':
     try:
         validate_password(typed_password)
     except ValueError as validate_password_error:
-        exit(str(validate_password_error))
+        exit(validate_password_error)
 
     password_strength = get_password_strength(
         typed_password, blacklist, person_data
